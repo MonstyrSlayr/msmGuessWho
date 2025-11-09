@@ -42,6 +42,11 @@ p
     flex-direction: row;
 }
 
+#cluesFooter
+{
+    max-width: 90%;
+}
+
 #guess
 {
     display: flex;

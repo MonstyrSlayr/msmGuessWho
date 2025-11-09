@@ -12,8 +12,10 @@ let guessStartTime = null;
 
 const RARITY = getRarities();
 
-function getMonstersWithUniqueIslands(monsters) {
-    const serializeIslands = (islands) => {
+function getMonstersWithUniqueIslands(monsters)
+{
+    const serializeIslands = (islands) =>
+    {
         return [...islands]
             .filter(island => !island.unreleased)
             .map(island => island.codename)
@@ -22,7 +24,8 @@ function getMonstersWithUniqueIslands(monsters) {
     };
 
     const comboCount = {};
-    for (const monster of monsters) {
+    for (const monster of monsters)
+    {
         const key = serializeIslands(monster.islands);
         comboCount[key] = (comboCount[key] || 0) + 1;
     }
@@ -30,8 +33,10 @@ function getMonstersWithUniqueIslands(monsters) {
     return monsters.filter(monster => comboCount[serializeIslands(monster.islands)] === 1);
 }
 
-function getMonstersWithUniqueElements(monsters) {
-    const serializeElements = (elements) => {
+function getMonstersWithUniqueElements(monsters)
+{
+    const serializeElements = (elements) =>
+    {
         return [...elements]
             .map(elementSigil => elementSigil.name)
             .sort()
@@ -39,7 +44,8 @@ function getMonstersWithUniqueElements(monsters) {
     };
 
     const comboCount = {};
-    for (const monster of monsters) {
+    for (const monster of monsters)
+    {
         const key = serializeElements(monster.elements);
         comboCount[key] = (comboCount[key] || 0) + 1;
     }
@@ -47,6 +53,27 @@ function getMonstersWithUniqueElements(monsters) {
     return monsters.filter(monster => comboCount[serializeElements(monster.elements)] === 1);
 }
 
+function getMonstersWithUniqueBios(monsters)
+{
+    const bioCount = {};
+    for (const monster of monsters)
+    {
+        const bio = normalizeBio(monster.bio);
+        bioCount[bio] = (bioCount[bio] || 0) + 1;
+    }
+
+    return monsters.filter(monster => bioCount[normalizeBio(monster.bio)] === 1);
+}
+
+function normalizeBio(bio)
+{
+    return bio
+        .trim()
+        .replace(/\s+/g, " ") // collapse multiple spaces/newlines
+        .toLowerCase();       // make comparison case-insensitive
+}
+
+// const monsters = (await getMonsters()).filter((monster) => monster.name == "Quibble");
 const monsters = await getMonsters();
 const commonMonsters = monsters.filter(monster => monster.rarity == RARITY.COMMON);
 const rareMonsters = monsters.filter(monster => monster.rarity == RARITY.RARE);
@@ -65,6 +92,8 @@ const rareMonstersUniqueElements = getMonstersWithUniqueElements(rareMonsters);
 const epicMonstersUniqueElements = getMonstersWithUniqueElements(epicMonsters);
 const majorMonstersUniqueElements = getMonstersWithUniqueElements(majorMonsters);
 const minorMonstersUniqueElements = getMonstersWithUniqueElements(minorMonsters);
+
+const monsterUniqueBios = getMonstersWithUniqueBios(monsters);
 
 function normalizeAndTrim(str)
 {
@@ -147,6 +176,24 @@ function formatTime(ms)
     return `${pad(minutes)}:${pad(seconds)}:${pad(milliseconds, 3)}`;
 }
 
+function censorMonsterWords(text, monsterName)
+{
+    const words = monsterName.trim().split(/\s+/);
+
+    const pattern = words
+        .map(w => `${escapeRegex(w)}s?`)
+        .join("|");
+
+    const regex = new RegExp(`(?<!\\w)(${pattern})(?=[\\W_]|$)`, "gi");
+
+    return text.replace(regex, "???");
+}
+
+function escapeRegex(str)
+{
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 let curMonster = null;
 let isFirstGuess = true;
 
@@ -208,6 +255,7 @@ document.addEventListener("keydown", (e) =>
 function newGuess()
 {
     cluesBoxDiv.innerHTML = "";
+    cluesFooter.innerHTML = "";
     revealDiv.innerHTML = "";
     guessInput.value = "";
     clearInterval(autoNextMonsterInterval);
@@ -237,6 +285,7 @@ function newGuess()
     || majorMonstersUniqueElements.includes(curMonster)
     || minorMonstersUniqueElements.includes(curMonster)) availableModes.push("elements");
 
+    if (monsterUniqueBios.includes(curMonster)) availableModes.push("bio");
     // console.log(availableModes);
 
     const mode = availableModes[Math.floor(availableModes.length * Math.random())];
@@ -319,6 +368,13 @@ function newGuess()
             {
                 cluesFooter.innerHTML += like.name + "<br>";
             }
+
+            break;
+        
+        case "bio":
+            cluesFooter.textContent = censorMonsterWords(curMonster.bio, curMonster.name);
+
+            break;
     }
 
     guessInput.disabled = false;
