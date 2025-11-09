@@ -1,10 +1,14 @@
 import { getMonsters } from "https://monstyrslayr.github.io/msmTools/monsters.js";
+import { getCookie, setCookie } from "./cookies.js";
 
 const NEXT_MONSTER_TIMER = 5000;
 const NEXT_MONSTER_INTERVAL = 20;
 let autoNextMonsterInterval = null;
+let timerInterval = null;
 
 let points = 0;
+
+let guessStartTime = null;
 
 const MODES = [
     "default",
@@ -100,9 +104,25 @@ function setupAutocomplete(input, ewDisclaimer, allMonsters, onSelect)
     });
 }
 
+function formatTime(ms)
+{
+    const totalMilliseconds = Math.floor(ms);
+    const totalSeconds = Math.floor(totalMilliseconds / 1000);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const milliseconds = totalMilliseconds % 1000;
+
+    // Pad with leading zeros
+    const pad = (n, len = 2) => String(n).padStart(len, '0');
+    return `${pad(minutes)}:${pad(seconds)}:${pad(milliseconds, 3)}`;
+}
+
+
+
 let curMonster = null;
 
 const pointsSpan = document.getElementById("pointsSpan");
+const timerSpan = document.getElementById("timer");
 const cluesDiv = document.getElementById("clues");
 const cluesBoxDiv = document.getElementById("cluesBox");
 const cluesFooter = document.getElementById("cluesFooter");
@@ -205,6 +225,12 @@ function newGuess()
 
     guessInput.disabled = false;
     forfeitButton.disabled = false;
+    guessStartTime = new Date();
+
+    timerInterval = setInterval(() =>
+    {
+        timerSpan.textContent = formatTime(new Date() - guessStartTime);
+    }, 13);
 }
 
 function revealMonster(forfeit)
@@ -212,6 +238,9 @@ function revealMonster(forfeit)
     const startTime = new Date();
     const endTime = new Date();
     endTime.setMilliseconds(endTime.getMilliseconds() + NEXT_MONSTER_TIMER);
+
+    clearInterval(timerInterval);
+    const elapsed = startTime - guessStartTime;
 
     guessInput.disabled = true;
     forfeitButton.disabled = true;
@@ -230,6 +259,31 @@ function revealMonster(forfeit)
     {
         revealText.textContent = `You guessed ${curMonster.name}!`;
         points++;
+
+        let existed = true;
+        if (getCookie(curMonster.name) == null)
+        {
+            setCookie(curMonster.name, elapsed, 364);
+            existed = false;
+        }
+
+        console.log(existed);
+
+        const oldBest = parseInt(getCookie(curMonster.name));
+        const bestTime = document.createElement("p");
+        if (elapsed > oldBest || existed == false)
+        {
+            // you got a new best!!
+            setCookie(curMonster.name, elapsed, 364);
+
+            bestTime.textContent = `New Best Time for this monster: ${formatTime(elapsed)}`;
+        }
+        else
+        {
+            bestTime.textContent = `Best Time for this monster: ${formatTime(oldBest)}`;
+        }
+
+        revealDiv.append(bestTime);
     }
     revealDiv.appendChild(revealText);
 
