@@ -4,7 +4,31 @@ const NEXT_MONSTER_TIMER = 5000;
 const NEXT_MONSTER_INTERVAL = 20;
 let autoNextMonsterInterval = null;
 
+const MODES = [
+    "default",
+    "island"
+];
+
+function getMonstersWithUniqueIslands(monsters) {
+    const serializeIslands = (islands) => {
+        return [...islands]
+            .filter(island => !island.unreleased)
+            .map(island => island.codename)
+            .sort()
+            .join("|");
+    };
+
+    const comboCount = {};
+    for (const monster of monsters) {
+        const key = serializeIslands(monster.islands);
+        comboCount[key] = (comboCount[key] || 0) + 1;
+    }
+
+    return monsters.filter(monster => comboCount[serializeIslands(monster.islands)] === 1);
+}
+
 const monsters = await getMonsters();
+const monstersUniqueIslands = getMonstersWithUniqueIslands(monsters);
 
 function normalizeAndTrim(str)
 {
@@ -91,6 +115,8 @@ function setupAutocomplete(input, list, allMonsters, onSelect)
 let curMonster = null;
 
 const cluesDiv = document.getElementById("clues");
+const cluesBoxDiv = document.getElementById("cluesBox");
+const cluesFooter = document.getElementById("cluesFooter");
 const guessDiv = document.getElementById("guess");
 const revealDiv = document.getElementById("reveal");
 const guessInput = document.getElementById("guessInput");
@@ -137,16 +163,50 @@ document.addEventListener("keydown", (e) =>
 
 function newGuess()
 {
-    cluesDiv.innerHTML = "";
+    cluesBoxDiv.innerHTML = "";
     revealDiv.innerHTML = "";
     guessInput.value = "";
     clearInterval(autoNextMonsterInterval);
 
-    curMonster = monsters[Math.floor(monsters.length * Math.random())];
+    const mode = MODES[Math.floor(Math.random() * MODES.length)];
+    // const mode = "island";
 
-    const clueImg = document.createElement("img");
-    clueImg.src = curMonster.portraitBlack;
-    cluesDiv.appendChild(clueImg);
+    switch (mode)
+    {
+        case "default": default:
+            curMonster = monsters[Math.floor(monsters.length * Math.random())];
+
+            const clueImg = document.createElement("img");
+            clueImg.src = curMonster.portraitBlack;
+            clueImg.alt = "Silhouette";
+            cluesBoxDiv.appendChild(clueImg);
+
+            cluesFooter.textContent = "";
+
+            break;
+        
+        case "island":
+            curMonster = monstersUniqueIslands[Math.floor(monstersUniqueIslands.length * Math.random())];
+
+            for (const island of curMonster.islands)
+            {
+                const clueImg = document.createElement("img");
+                clueImg.src = island.symbol;
+                clueImg.alt = island.name;
+                cluesBoxDiv.appendChild(clueImg);
+            }
+
+            if (curMonster.islands.size == 1)
+            {
+                cluesFooter.textContent = "Only one monster is uniquely on this island!";
+            }
+            else
+            {
+                cluesFooter.textContent = "Only one monster is uniquely on these islands!";
+            }
+
+            break;
+    }
 
     guessInput.disabled = false;
 }
@@ -161,7 +221,19 @@ function revealMonster(forfeit)
 
     const revealImg = document.createElement("img");
     revealImg.src = curMonster.portrait;
+    revealImg.alt = curMonster.name;
     revealDiv.appendChild(revealImg);
+
+    const revealText = document.createElement("p");
+    if (forfeit)
+    {
+        revealText.textContent = `It was ${curMonster.name}!`;
+    }
+    else
+    {
+        revealText.textContent = `You guessed ${curMonster.name}!`;
+    }
+    revealDiv.appendChild(revealText);
 
     const sweepingCircle = document.createElement("canvas");
     sweepingCircle.classList.add("sweepingCircle");
@@ -182,7 +254,7 @@ function revealMonster(forfeit)
         
         sweepingCircleCtx.beginPath();
         sweepingCircleCtx.arc(sweepingCircle.width/2, sweepingCircle.height/2, sweepingCircle.width/6, _angleOffset, _angleOffset + _angle);
-        sweepingCircleCtx.strokeStyle = "black";
+        sweepingCircleCtx.strokeStyle = "white";
         sweepingCircleCtx.lineWidth = 16;
         sweepingCircleCtx.stroke();
 

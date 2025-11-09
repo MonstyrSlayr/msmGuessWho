@@ -1,0 +1,63 @@
+body
+{
+    background-color: rgb(129, 176, 219);
+}
+
+h1
+{
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 60px;
+}
+
+#clues
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1em;
+    gap: 1em;
+    flex-direction: column;
+}
+
+#cluesBox
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+#guess
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1em;
+}
+
+#guessInput
+{
+    border: none;
+    font-size: 56px;
+    background-color: white;
+    border-radius: 0.5em;
+    padding: 0.25em;
+}
+
+#reveal
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1em;
+    flex-direction: column;
+}
+
+p
+{
+    font-size: 40px;
+    color: white;
+}
