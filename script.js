@@ -4,6 +4,8 @@ const NEXT_MONSTER_TIMER = 5000;
 const NEXT_MONSTER_INTERVAL = 20;
 let autoNextMonsterInterval = null;
 
+let points = 0;
+
 const MODES = [
     "default",
     "island"
@@ -39,7 +41,7 @@ function normalizeAndTrim(str)
         .toLowerCase();                    // take a wild guess
 }
 
-function setupAutocomplete(input, list, allMonsters, onSelect)
+function setupAutocomplete(input, ewDisclaimer, allMonsters, onSelect)
 {
     let currentMatches = [];
 
@@ -49,6 +51,15 @@ function setupAutocomplete(input, list, allMonsters, onSelect)
         // list.innerHTML = "";
 
         if (!query) return;
+
+        if (query == "epicwubbox")
+        {
+            ewDisclaimer.style.display = "block";
+        }
+        else
+        {
+            ewDisclaimer.style.display = "none";
+        }
 
         let foundMonster = false;
 
@@ -72,11 +83,8 @@ function setupAutocomplete(input, list, allMonsters, onSelect)
             item.addEventListener("click", () =>
             {
                 input.value = monster.name;
-                // list.innerHTML = "";
                 onSelect(monster);
             });
-
-            // list.appendChild(item);
 
             if (query == normalizeAndTrim(monster.name))
             {
@@ -90,43 +98,30 @@ function setupAutocomplete(input, list, allMonsters, onSelect)
             onSelect(null);
         }
     });
-
-    // input.addEventListener("keydown", (e) =>
-    // {
-    //     if (e.key === "Enter" && currentMatches.length > 0)
-    //     {
-    //         e.preventDefault();
-
-    //         // simulate click on first match
-    //         const firstItem = list.querySelector(".autocompleteItem");
-    //         if (firstItem) firstItem.click();
-    //     }
-    // });
-
-    // document.addEventListener("click", (e) =>
-    // {
-    //     if (!list.contains(e.target) && e.target !== input)
-    //     {
-    //         list.innerHTML = "";
-    //     }
-    // });
 }
 
 let curMonster = null;
 
+const pointsSpan = document.getElementById("pointsSpan");
 const cluesDiv = document.getElementById("clues");
 const cluesBoxDiv = document.getElementById("cluesBox");
 const cluesFooter = document.getElementById("cluesFooter");
 const guessDiv = document.getElementById("guess");
 const revealDiv = document.getElementById("reveal");
+const forfeitButton = document.getElementById("forfeitButton");
 const guessInput = document.getElementById("guessInput");
-const guessAutocomplete = document.getElementById("guessAutocomplete");
+const epicWubboxDisclaimer = document.getElementById("epicWubboxDisclaimer");
 
-setupAutocomplete(guessInput, guessAutocomplete, monsters, (guessedMonster) => {
+setupAutocomplete(guessInput, epicWubboxDisclaimer, monsters, (guessedMonster) => {
     if (guessedMonster == curMonster)
     {
         revealMonster(false);
     }
+});
+
+forfeitButton.addEventListener("click", () =>
+{
+    revealMonster(true);
 });
 
 document.addEventListener("keydown", (e) =>
@@ -209,6 +204,7 @@ function newGuess()
     }
 
     guessInput.disabled = false;
+    forfeitButton.disabled = false;
 }
 
 function revealMonster(forfeit)
@@ -218,6 +214,7 @@ function revealMonster(forfeit)
     endTime.setMilliseconds(endTime.getMilliseconds() + NEXT_MONSTER_TIMER);
 
     guessInput.disabled = true;
+    forfeitButton.disabled = true;
 
     const revealImg = document.createElement("img");
     revealImg.src = curMonster.portrait;
@@ -232,6 +229,7 @@ function revealMonster(forfeit)
     else
     {
         revealText.textContent = `You guessed ${curMonster.name}!`;
+        points++;
     }
     revealDiv.appendChild(revealText);
 
@@ -266,6 +264,8 @@ function revealMonster(forfeit)
             newGuess();
         }
     }, NEXT_MONSTER_INTERVAL);
+
+    pointsSpan.textContent = points;
 }
 
 newGuess();

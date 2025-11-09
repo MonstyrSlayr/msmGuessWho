@@ -1,3 +1,8 @@
+*
+{
+    transition: all 0.15s;
+}
+
 body
 {
     background-color: rgb(129, 176, 219);
@@ -9,6 +14,13 @@ h1
     color: white;
     font-weight: bold;
     font-size: 60px;
+}
+
+p
+{
+    font-size: 40px;
+    color: white;
+    text-align: center;
 }
 
 #clues
@@ -36,6 +48,8 @@ h1
     justify-content: center;
     align-items: center;
     margin: 1em;
+    flex-direction: column;
+    gap: 1em;
 }
 
 #guessInput
@@ -47,6 +61,27 @@ h1
     padding: 0.25em;
 }
 
+#guessInput:hover:disabled
+{
+    cursor: default;
+}
+
+#forfeitButton
+{
+    border: none;
+    font-size: 40px;
+    background-color: rgb(78, 113, 141);
+    border-radius: 0.5em;
+    color: white;
+    padding: 0.45em 1em;
+}
+
+#forfeitButton:hover:not(:disabled)
+{
+    background-color: rgb(103, 141, 172);
+    scale: 103%;
+}
+
 #reveal
 {
     display: flex;
@@ -56,8 +91,7 @@ h1
     flex-direction: column;
 }
 
-p
+#epicWubboxDisclaimer
 {
-    font-size: 40px;
-    color: white;
+    display: none;
 }

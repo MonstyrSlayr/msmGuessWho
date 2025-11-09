@@ -32,6 +32,8 @@
 <body>
     <h1>MSM Guess Who</h1>
 
+    <p>Points: <span id="pointsSpan">0</span></p>
+
     <div id="clues">
         <div id="cluesBox">
         
@@ -42,8 +44,12 @@
     </div>
 
     <div id="guess">
-        <input type="text" id="guessInput" autocomplete="off">
+        <input type="text" id="guessInput" autocomplete="off" disabled>
         <div class="autocompleteList" id="guessAutocomplete"></div>
+
+        <p id="epicWubboxDisclaimer">Clarify the island after Epic Wubbox please!</p>
+
+        <button id="forfeitButton" disabled>Forfeit</button>
     </div>
 
     <div id="reveal">
