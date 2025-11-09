@@ -215,6 +215,11 @@ function newGuess()
     curMonster = monsters[Math.floor(monsters.length * Math.random())];
     const availableModes = ["silhouette"];
 
+    if ([...curMonster.likes].filter(like => !like.island.unreleased).length > 0)
+    {
+        availableModes.push("likes");
+    }
+
     if (!isFirstGuess)
     {
         availableModes.push("memory");
@@ -231,6 +236,8 @@ function newGuess()
     || epicMonstersUniqueElements.includes(curMonster)
     || majorMonstersUniqueElements.includes(curMonster)
     || minorMonstersUniqueElements.includes(curMonster)) availableModes.push("elements");
+
+    // console.log(availableModes);
 
     const mode = availableModes[Math.floor(availableModes.length * Math.random())];
 
@@ -289,7 +296,29 @@ function newGuess()
                 clueSrc.src = curMonster.memory;
                 clueSound.appendChild(clueSrc);
 
-            cluesFooter.textContent = `The rarity is ${curMonster.rarity}!`;
+            const daRarity = curMonster.rarity == RARITY.CHILD ? "Young" : curMonster.rarity;
+
+            cluesFooter.textContent = `The rarity is ${daRarity}!`;
+        
+            break;
+
+        case "likes":
+            const randLike = [...curMonster.likes].filter(like => !like.island.unreleased)[Math.floor([...curMonster.likes].filter(like => !like.island.unreleased).length * Math.random())];
+
+            const daIsland = randLike.island;
+            const clueIsland = document.createElement("img");
+            clueIsland.src = daIsland.symbol;
+            clueIsland.alt = daIsland.name;
+            cluesBoxDiv.appendChild(clueIsland);
+
+            cluesFooter.innerHTML = `Likes:<br>`;
+
+            const daLikes = [...curMonster.likes].filter(like => like.island == daIsland);
+
+            for (const like of daLikes)
+            {
+                cluesFooter.innerHTML += like.name + "<br>";
+            }
     }
 
     guessInput.disabled = false;
