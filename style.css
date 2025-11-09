@@ -97,6 +97,15 @@ p
     display: none;
 }
 
+audio
+{
+    border-radius: 1em;
+    width: 30em;
+    scale: 200%;
+    margin: 2em;
+    max-width: 90%;
+}
+
 @media screen and (max-width: 1200px)
 {
     #cluesBox > *:only-child
@@ -107,5 +116,11 @@ p
     #cluesBox > *
     {
         max-width: 30%;
+    }
+
+    audio
+    {
+        scale: 100%;
+        margin: auto;
     }
 }

@@ -148,6 +148,7 @@ function formatTime(ms)
 }
 
 let curMonster = null;
+let isFirstGuess = true;
 
 const pointsSpan = document.getElementById("pointsSpan");
 const timerSpan = document.getElementById("timer");
@@ -212,7 +213,12 @@ function newGuess()
     clearInterval(autoNextMonsterInterval);
 
     curMonster = monsters[Math.floor(monsters.length * Math.random())];
-    const availableModes = ["default"];
+    const availableModes = ["silhouette"];
+
+    if (!isFirstGuess)
+    {
+        availableModes.push("memory");
+    }
 
     if (commonMonstersUniqueIslands.includes(curMonster)
     || rareMonstersUniqueIslands.includes(curMonster)
@@ -230,7 +236,7 @@ function newGuess()
 
     switch (mode)
     {
-        case "default": default:
+        case "silhouette": default:
             const clueImg = document.createElement("img");
             clueImg.src = curMonster.portraitBlack;
             clueImg.alt = "Silhouette";
@@ -272,6 +278,18 @@ function newGuess()
             cluesFooter.textContent = `Only one ${curMonster.rarity} monster has this unique element combination!`;
 
             break;
+        
+        case "memory":
+            const clueSound = document.createElement("audio");
+            clueSound.controls = true;
+            clueSound.autoplay = true;
+            cluesBoxDiv.appendChild(clueSound);
+
+                const clueSrc = document.createElement("source");
+                clueSrc.src = curMonster.memory;
+                clueSound.appendChild(clueSrc);
+
+            cluesFooter.textContent = `The rarity is ${curMonster.rarity}!`;
     }
 
     guessInput.disabled = false;
@@ -286,6 +304,8 @@ function newGuess()
 
 function revealMonster(forfeit)
 {
+    isFirstGuess = false;
+
     const startTime = new Date();
     const endTime = new Date();
     endTime.setMilliseconds(endTime.getMilliseconds() + NEXT_MONSTER_TIMER);
@@ -295,6 +315,11 @@ function revealMonster(forfeit)
 
     guessInput.disabled = true;
     forfeitButton.disabled = true;
+
+    const sweepingCircle = document.createElement("canvas");
+    sweepingCircle.classList.add("sweepingCircle");
+    revealDiv.appendChild(sweepingCircle);
+    const sweepingCircleCtx = sweepingCircle.getContext("2d");
 
     const revealImg = document.createElement("img");
     revealImg.src = curMonster.portrait;
@@ -320,7 +345,7 @@ function revealMonster(forfeit)
 
         const oldBest = parseInt(getCookie(curMonster.name));
         const bestTime = document.createElement("p");
-        if (elapsed > oldBest || existed == false)
+        if (elapsed < oldBest || existed == false)
         {
             // you got a new best!!
             setCookie(curMonster.name, elapsed, 364);
@@ -335,11 +360,6 @@ function revealMonster(forfeit)
         revealDiv.append(bestTime);
     }
     revealDiv.appendChild(revealText);
-
-    const sweepingCircle = document.createElement("canvas");
-    sweepingCircle.classList.add("sweepingCircle");
-    revealDiv.appendChild(sweepingCircle);
-    const sweepingCircleCtx = sweepingCircle.getContext("2d");
 
     sweepingCircle.addEventListener("click", () =>
     {
