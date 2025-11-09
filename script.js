@@ -473,6 +473,9 @@ function revealMonster(forfeit)
         }
     }, NEXT_MONSTER_INTERVAL);
 
+    const sound = new Audio(curMonster.memory);
+    sound.play();
+
     pointsSpan.textContent = points;
 }
 
