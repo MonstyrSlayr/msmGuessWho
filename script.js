@@ -267,8 +267,6 @@ function revealMonster(forfeit)
             existed = false;
         }
 
-        console.log(existed);
-
         const oldBest = parseInt(getCookie(curMonster.name));
         const bestTime = document.createElement("p");
         if (elapsed > oldBest || existed == false)

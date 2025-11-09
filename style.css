@@ -59,6 +59,7 @@ p
     background-color: white;
     border-radius: 0.5em;
     padding: 0.25em;
+    max-width: 90%;
 }
 
 #guessInput:hover:disabled
@@ -94,4 +95,17 @@ p
 #epicWubboxDisclaimer
 {
     display: none;
+}
+
+@media screen and (max-width: 1200px)
+{
+    #cluesBox > *:only-child
+    {
+        max-width: 90%;
+    }
+
+    #cluesBox > *
+    {
+        max-width: 30%;
+    }
 }
