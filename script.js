@@ -1,7 +1,8 @@
 import { getMonsters } from "https://monstyrslayr.github.io/msmTools/monsters.js";
 
 const NEXT_MONSTER_TIMER = 5000;
-let autoNextMonsterTimeout = null;
+const NEXT_MONSTER_INTERVAL = 20;
+let autoNextMonsterInterval = null;
 
 const monsters = await getMonsters();
 
@@ -139,7 +140,7 @@ function newGuess()
     cluesDiv.innerHTML = "";
     revealDiv.innerHTML = "";
     guessInput.value = "";
-    clearTimeout(autoNextMonsterTimeout);
+    clearInterval(autoNextMonsterInterval);
 
     curMonster = monsters[Math.floor(monsters.length * Math.random())];
 
@@ -152,15 +153,47 @@ function newGuess()
 
 function revealMonster(forfeit)
 {
+    const startTime = new Date();
+    const endTime = new Date();
+    endTime.setMilliseconds(endTime.getMilliseconds() + NEXT_MONSTER_TIMER);
+
+    guessInput.disabled = true;
+
     const revealImg = document.createElement("img");
     revealImg.src = curMonster.portrait;
     revealDiv.appendChild(revealImg);
-    guessInput.disabled = true;
 
-    autoNextMonsterTimeout = setTimeout(() =>
+    const sweepingCircle = document.createElement("canvas");
+    sweepingCircle.classList.add("sweepingCircle");
+    revealDiv.appendChild(sweepingCircle);
+    const sweepingCircleCtx = sweepingCircle.getContext("2d");
+
+    sweepingCircle.addEventListener("click", () =>
     {
         newGuess();
-    }, NEXT_MONSTER_TIMER);
+    });
+
+    let t = 0;
+
+    autoNextMonsterInterval = setInterval(() =>
+    {
+        let _angleOffset = -0.5 * Math.PI;
+        let _angle = (t / NEXT_MONSTER_TIMER) * 2 * Math.PI;
+        
+        sweepingCircleCtx.beginPath();
+        sweepingCircleCtx.arc(sweepingCircle.width/2, sweepingCircle.height/2, sweepingCircle.width/6, _angleOffset, _angleOffset + _angle);
+        sweepingCircleCtx.strokeStyle = "black";
+        sweepingCircleCtx.lineWidth = 16;
+        sweepingCircleCtx.stroke();
+
+        const now = new Date();
+        t = now - startTime;
+
+        if (now > endTime)
+        {
+            newGuess();
+        }
+    }, NEXT_MONSTER_INTERVAL);
 }
 
 newGuess();
