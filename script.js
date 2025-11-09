@@ -1,4 +1,4 @@
-import { getMonsters } from "https://monstyrslayr.github.io/msmTools/monsters.js";
+import { getMonsters, getRarities } from "https://monstyrslayr.github.io/msmTools/monsters.js";
 import { getCookie, setCookie } from "./cookies.js";
 
 const NEXT_MONSTER_TIMER = 5000;
@@ -10,10 +10,7 @@ let points = 0;
 
 let guessStartTime = null;
 
-const MODES = [
-    "default",
-    "island"
-];
+const RARITY = getRarities();
 
 function getMonstersWithUniqueIslands(monsters) {
     const serializeIslands = (islands) => {
@@ -33,8 +30,41 @@ function getMonstersWithUniqueIslands(monsters) {
     return monsters.filter(monster => comboCount[serializeIslands(monster.islands)] === 1);
 }
 
+function getMonstersWithUniqueElements(monsters) {
+    const serializeElements = (elements) => {
+        return [...elements]
+            .map(elementSigil => elementSigil.name)
+            .sort()
+            .join("|");
+    };
+
+    const comboCount = {};
+    for (const monster of monsters) {
+        const key = serializeElements(monster.elements);
+        comboCount[key] = (comboCount[key] || 0) + 1;
+    }
+
+    return monsters.filter(monster => comboCount[serializeElements(monster.elements)] === 1);
+}
+
 const monsters = await getMonsters();
-const monstersUniqueIslands = getMonstersWithUniqueIslands(monsters);
+const commonMonsters = monsters.filter(monster => monster.rarity == RARITY.COMMON);
+const rareMonsters = monsters.filter(monster => monster.rarity == RARITY.RARE);
+const epicMonsters = monsters.filter(monster => monster.rarity == RARITY.EPIC);
+const majorMonsters = monsters.filter(monster => monster.rarity == RARITY.MAJOR);
+const minorMonsters = monsters.filter(monster => monster.rarity == RARITY.MINOR);
+
+const commonMonstersUniqueIslands = getMonstersWithUniqueIslands(commonMonsters);
+const rareMonstersUniqueIslands = getMonstersWithUniqueIslands(rareMonsters);
+const epicMonstersUniqueIslands = getMonstersWithUniqueIslands(epicMonsters);
+const majorMonstersUniqueIslands = getMonstersWithUniqueIslands(majorMonsters);
+const minorMonstersUniqueIslands = getMonstersWithUniqueIslands(minorMonsters);
+
+const commonMonstersUniqueElements = getMonstersWithUniqueElements(commonMonsters);
+const rareMonstersUniqueElements = getMonstersWithUniqueElements(rareMonsters);
+const epicMonstersUniqueElements = getMonstersWithUniqueElements(epicMonsters);
+const majorMonstersUniqueElements = getMonstersWithUniqueElements(majorMonsters);
+const minorMonstersUniqueElements = getMonstersWithUniqueElements(minorMonsters);
 
 function normalizeAndTrim(str)
 {
@@ -117,8 +147,6 @@ function formatTime(ms)
     return `${pad(minutes)}:${pad(seconds)}:${pad(milliseconds, 3)}`;
 }
 
-
-
 let curMonster = null;
 
 const pointsSpan = document.getElementById("pointsSpan");
@@ -183,14 +211,26 @@ function newGuess()
     guessInput.value = "";
     clearInterval(autoNextMonsterInterval);
 
-    const mode = MODES[Math.floor(Math.random() * MODES.length)];
-    // const mode = "island";
+    curMonster = monsters[Math.floor(monsters.length * Math.random())];
+    const availableModes = ["default"];
+
+    if (commonMonstersUniqueIslands.includes(curMonster)
+    || rareMonstersUniqueIslands.includes(curMonster)
+    || epicMonstersUniqueIslands.includes(curMonster)
+    || majorMonstersUniqueIslands.includes(curMonster)
+    || minorMonstersUniqueIslands.includes(curMonster)) availableModes.push("islands");
+
+    if (commonMonstersUniqueElements.includes(curMonster)
+    || rareMonstersUniqueElements.includes(curMonster)
+    || epicMonstersUniqueElements.includes(curMonster)
+    || majorMonstersUniqueElements.includes(curMonster)
+    || minorMonstersUniqueElements.includes(curMonster)) availableModes.push("elements");
+
+    const mode = availableModes[Math.floor(availableModes.length * Math.random())];
 
     switch (mode)
     {
         case "default": default:
-            curMonster = monsters[Math.floor(monsters.length * Math.random())];
-
             const clueImg = document.createElement("img");
             clueImg.src = curMonster.portraitBlack;
             clueImg.alt = "Silhouette";
@@ -200,9 +240,7 @@ function newGuess()
 
             break;
         
-        case "island":
-            curMonster = monstersUniqueIslands[Math.floor(monstersUniqueIslands.length * Math.random())];
-
+        case "islands":
             for (const island of curMonster.islands)
             {
                 const clueImg = document.createElement("img");
@@ -213,12 +251,25 @@ function newGuess()
 
             if (curMonster.islands.size == 1)
             {
-                cluesFooter.textContent = "Only one monster is uniquely on this island!";
+                cluesFooter.textContent = `Only one ${curMonster.rarity} monster is uniquely on this island!`;
             }
             else
             {
-                cluesFooter.textContent = "Only one monster is uniquely on these islands!";
+                cluesFooter.textContent = `Only one ${curMonster.rarity} monster is uniquely on these islands!`;
             }
+
+            break;
+        
+        case "elements":
+            for (const elementSigil of curMonster.elements)
+            {
+                const clueImg = document.createElement("img");
+                clueImg.src = elementSigil.sigil;
+                clueImg.alt = elementSigil.name;
+                cluesBoxDiv.appendChild(clueImg);
+            }
+
+            cluesFooter.textContent = `Only one ${curMonster.rarity} monster has this unique element combination!`;
 
             break;
     }
