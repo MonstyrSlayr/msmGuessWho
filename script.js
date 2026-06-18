@@ -6,6 +6,37 @@ const NEXT_MONSTER_INTERVAL = 20;
 let autoNextMonsterInterval = null;
 let timerInterval = null;
 
+const modes = [
+    "silhouette",
+    "islands",
+    "elements",
+    "memory",
+    "likes",
+    "bio"
+];
+
+const modeCheckboxes = [];
+
+const modeOptionsDiv = document.getElementById("modeOptions");
+for (const daMode of modes)
+{
+    const daDiv = document.createElement("div");
+    daDiv.classList.add("option");
+    modeOptionsDiv.appendChild(daDiv);
+
+        const daCheckbox = document.createElement("input");
+        daCheckbox.type = "checkbox";
+        daCheckbox.id = "check" + daMode;
+        daCheckbox.checked = true;
+        daDiv.appendChild(daCheckbox);
+        modeCheckboxes.push(daCheckbox);
+
+        const daLabel = document.createElement("label");
+        daLabel.textContent = daMode;
+        daLabel.htmlFor = "check" + daMode;
+        daDiv.appendChild(daLabel);
+}
+
 let points = 0;
 
 let guessStartTime = null;
@@ -252,6 +283,35 @@ document.addEventListener("keydown", (e) =>
     }
 });
 
+for (const mon of monsters)
+{
+    mon.modes = ["silhouette"];
+
+    if ([...mon.likes].filter(like => !like.island.unreleased).length > 0)
+    {
+        mon.modes.push("likes");
+    }
+
+    if (!isFirstGuess)
+    {
+        mon.modes.push("memory");
+    }
+
+    if (commonMonstersUniqueIslands.includes(mon)
+    || rareMonstersUniqueIslands.includes(mon)
+    || epicMonstersUniqueIslands.includes(mon)
+    || majorMonstersUniqueIslands.includes(mon)
+    || minorMonstersUniqueIslands.includes(mon)) mon.modes.push("islands");
+
+    if (commonMonstersUniqueElements.includes(mon)
+    || rareMonstersUniqueElements.includes(mon)
+    || epicMonstersUniqueElements.includes(mon)
+    || majorMonstersUniqueElements.includes(mon)
+    || minorMonstersUniqueElements.includes(mon)) mon.modes.push("elements");
+
+    if (monsterUniqueBios.includes(mon)) mon.modes.push("bio");
+}
+
 function newGuess()
 {
     cluesBoxDiv.innerHTML = "";
@@ -260,37 +320,31 @@ function newGuess()
     guessInput.value = "";
     clearInterval(autoNextMonsterInterval);
 
-    curMonster = monsters[Math.floor(monsters.length * Math.random())];
-    const availableModes = ["silhouette"];
+    // choose mode, THEN choose monster
+    const availableModes = [];
 
-    if ([...curMonster.likes].filter(like => !like.island.unreleased).length > 0)
+    for (let i = 0; i < modes.length; i++)
     {
-        availableModes.push("likes");
+        const soMode = modes[i];
+        const soCheckbox = modeCheckboxes[i];
+
+        if (soCheckbox.checked)
+        {
+            availableModes.push(soMode);
+        }
     }
 
-    if (!isFirstGuess)
+    if (availableModes.length == 0)
     {
-        availableModes.push("memory");
+        availableModes.push("silhouette");
     }
 
-    if (commonMonstersUniqueIslands.includes(curMonster)
-    || rareMonstersUniqueIslands.includes(curMonster)
-    || epicMonstersUniqueIslands.includes(curMonster)
-    || majorMonstersUniqueIslands.includes(curMonster)
-    || minorMonstersUniqueIslands.includes(curMonster)) availableModes.push("islands");
+    const daMode = availableModes[Math.floor(availableModes.length * Math.random())];
 
-    if (commonMonstersUniqueElements.includes(curMonster)
-    || rareMonstersUniqueElements.includes(curMonster)
-    || epicMonstersUniqueElements.includes(curMonster)
-    || majorMonstersUniqueElements.includes(curMonster)
-    || minorMonstersUniqueElements.includes(curMonster)) availableModes.push("elements");
+    const availableMonsters = monsters.filter(mon => mon.modes.includes(daMode));
+    curMonster = availableMonsters[Math.floor(Math.random() * availableMonsters.length)];
 
-    if (monsterUniqueBios.includes(curMonster)) availableModes.push("bio");
-    // console.log(availableModes);
-
-    const mode = availableModes[Math.floor(availableModes.length * Math.random())];
-
-    switch (mode)
+    switch (daMode)
     {
         case "silhouette": default:
             const clueImg = document.createElement("img");

@@ -32,29 +32,43 @@
 <body>
     <h1>MSM Guess Who!</h1>
 
-    <p>Points: <span id="pointsSpan">0</span></p>
-    <p id="timer"></p>
+    <div id="threeGrid">
+        <div></div>
 
-    <div id="clues">
-        <div id="cluesBox">
-        
+        <div>
+            <p>Points: <span id="pointsSpan">0</span></p>
+            <p id="timer"></p>
+
+            <div id="clues">
+                <div id="cluesBox">
+                
+                </div>
+                <p id="cluesFooter">
+                
+                </p>
+            </div>
+
+            <div id="guess">
+                <input type="text" id="guessInput" autocomplete="off" disabled>
+                <div class="autocompleteList" id="guessAutocomplete"></div>
+
+                <p id="epicWubboxDisclaimer">Clarify the island after Epic Wubbox please!</p>
+
+                <button id="forfeitButton" disabled>Forfeit</button>
+            </div>
+
+            <div id="reveal">
+
+            </div>
+
         </div>
-        <p id="cluesFooter">
-        
-        </p>
-    </div>
 
-    <div id="guess">
-        <input type="text" id="guessInput" autocomplete="off" disabled>
-        <div class="autocompleteList" id="guessAutocomplete"></div>
+        <div id="options">
+            <h2>Guess Modes</h2>
+            <div id="modeOptions">
 
-        <p id="epicWubboxDisclaimer">Clarify the island after Epic Wubbox please!</p>
-
-        <button id="forfeitButton" disabled>Forfeit</button>
-    </div>
-
-    <div id="reveal">
-
+            </div>
+        </div>
     </div>
 
     <footer>

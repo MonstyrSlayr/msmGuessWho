@@ -16,9 +16,24 @@ h1
     font-size: 60px;
 }
 
+h2
+{
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 48px;
+}
+
 p
 {
-    font-size: 40px;
+    font-size: 28px;
+    color: white;
+    text-align: center;
+}
+
+label
+{
+    font-size: 28px;
     color: white;
     text-align: center;
 }
@@ -128,6 +143,47 @@ audio
     max-width: 90%;
 }
 
+#threeGrid
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    max-width: 90%;
+    margin: auto;
+}
+
+#threeGrid > div
+{
+    margin: 0em 1em;
+    max-width: 100%;
+}
+
+.option
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 1em;
+    justify-content: left;
+    align-items: center;
+}
+
+.option > input
+{
+    scale: 200%;
+}
+
+@media screen and (max-width: 1300px)
+{
+    #threeGrid
+    {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
 @media screen and (max-width: 1200px)
 {
     #cluesBox > *:only-child
@@ -144,5 +200,13 @@ audio
     {
         scale: 100%;
         margin: auto;
+    }
+}
+
+@media screen and (max-width: 600px)
+{
+    p
+    {
+        font-size: 24px;
     }
 }
