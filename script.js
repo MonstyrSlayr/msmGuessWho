@@ -285,16 +285,11 @@ document.addEventListener("keydown", (e) =>
 
 for (const mon of monsters)
 {
-    mon.modes = ["silhouette"];
+    mon.modes = ["silhouette", "memory"];
 
     if ([...mon.likes].filter(like => !like.island.unreleased).length > 0)
     {
         mon.modes.push("likes");
-    }
-
-    if (!isFirstGuess)
-    {
-        mon.modes.push("memory");
     }
 
     if (commonMonstersUniqueIslands.includes(mon)
@@ -330,7 +325,14 @@ function newGuess()
 
         if (soCheckbox.checked)
         {
-            availableModes.push(soMode);
+            if (soMode == "memory" && !isFirstGuess)
+            {
+                availableModes.push("memory");
+            }
+            else
+            {
+                availableModes.push(soMode);
+            }
         }
     }
 

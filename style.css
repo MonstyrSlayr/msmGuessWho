@@ -136,11 +136,12 @@ footer > p
 
 audio
 {
-    border-radius: 1em;
+    border-radius: 0.5em;
     width: 30em;
     scale: 200%;
     margin: 2em;
     max-width: 90%;
+    overflow: hidden;
 }
 
 #threeGrid
@@ -157,19 +158,37 @@ audio
     max-width: 100%;
 }
 
+#options
+{
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+}
+
+#options > *
+{
+    width: 100%;
+    min-width: fit-content;
+    text-wrap: nowrap;
+}
+
 .option
 {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    gap: 1em;
+    gap: 0.5em;
     justify-content: left;
     align-items: center;
+    width: 100%;
 }
 
 .option > input
 {
     scale: 200%;
+    margin: 1em;
 }
 
 @media screen and (max-width: 1300px)
@@ -208,5 +227,10 @@ audio
     p
     {
         font-size: 24px;
+    }
+
+    #guessInput
+    {
+        font-size: 40px;
     }
 }
