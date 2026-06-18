@@ -74,6 +74,16 @@ footer > p
     flex-direction: row;
 }
 
+#cluesBox > *:only-child
+{
+    max-width: 80%;
+}
+
+#cluesBox > *
+{
+    max-width: 25%;
+}
+
 #cluesFooter
 {
     max-width: 90%;
@@ -191,6 +201,11 @@ audio
     margin: 1em;
 }
 
+.hidden
+{
+    display: none !important;
+}
+
 @media screen and (max-width: 1300px)
 {
     #threeGrid
@@ -205,16 +220,6 @@ audio
 
 @media screen and (max-width: 1200px)
 {
-    #cluesBox > *:only-child
-    {
-        max-width: 90%;
-    }
-
-    #cluesBox > *
-    {
-        max-width: 30%;
-    }
-
     audio
     {
         scale: 100%;

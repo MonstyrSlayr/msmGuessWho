@@ -233,6 +233,7 @@ const timerSpan = document.getElementById("timer");
 const cluesDiv = document.getElementById("clues");
 const cluesBoxDiv = document.getElementById("cluesBox");
 const cluesFooter = document.getElementById("cluesFooter");
+const clueRarity = document.getElementById("clueRarity");
 const guessDiv = document.getElementById("guess");
 const revealDiv = document.getElementById("reveal");
 const forfeitButton = document.getElementById("forfeitButton");
@@ -307,12 +308,34 @@ for (const mon of monsters)
     if (monsterUniqueBios.includes(mon)) mon.modes.push("bio");
 }
 
+function setClueRarity(daRarity)
+{
+    switch (daRarity)
+    {
+        case RARITY.COMMON:
+            clueRarity.classList.remove("hidden");
+            clueRarity.src = "https://monstyrslayr.github.io/msmTools/webp/square/monster_portrait_monsters.webp";
+            break;
+            
+        case RARITY.RARE:
+            clueRarity.classList.remove("hidden");
+            clueRarity.src = "https://monstyrslayr.github.io/msmTools/webp/square/monster_portrait_rares.webp";
+            break;
+            
+        case RARITY.EPIC:
+            clueRarity.classList.remove("hidden");
+            clueRarity.src = "https://monstyrslayr.github.io/msmTools/webp/square/monster_portrait_epics.webp";
+            break;
+    }
+}
+
 function newGuess()
 {
     cluesBoxDiv.innerHTML = "";
     cluesFooter.innerHTML = "";
     revealDiv.innerHTML = "";
     guessInput.value = "";
+    clueRarity.classList.add("hidden");
     clearInterval(autoNextMonsterInterval);
 
     // choose mode, THEN choose monster
@@ -376,6 +399,8 @@ function newGuess()
                 cluesFooter.textContent = `Only one ${curMonster.rarity} monster is uniquely on these islands!`;
             }
 
+            setClueRarity(curMonster.rarity);
+
             break;
         
         case "elements":
@@ -388,6 +413,8 @@ function newGuess()
             }
 
             cluesFooter.textContent = `Only one ${curMonster.rarity} monster has this unique element combination!`;
+
+            setClueRarity(curMonster.rarity);
 
             break;
         
@@ -404,6 +431,8 @@ function newGuess()
             const daRarity = curMonster.rarity == RARITY.CHILD ? "Young" : curMonster.rarity;
 
             cluesFooter.textContent = `The rarity is ${daRarity}!`;
+
+            setClueRarity(curMonster.rarity);
         
             break;
 
