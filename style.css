@@ -67,7 +67,7 @@ footer > p
     flex-direction: column;
 }
 
-#cluesBox
+.cluesBox
 {
     display: flex;
     justify-content: center;
@@ -76,14 +76,15 @@ footer > p
     flex-direction: row;
 }
 
-#cluesBox > *:only-child
+.cluesBox > *:only-child
 {
     max-width: 80%;
 }
 
-#cluesBox > *
+.cluesBox > *
 {
-    max-width: 25%;
+    max-width: 13em;
+    margin: 0.5em;
 }
 
 #cluesFooter
@@ -252,5 +253,11 @@ audio
     #guessInput
     {
         font-size: 40px;
+    }
+
+    .cluesBox > *
+    {
+        max-width: 40%;
+        margin: 0.5em;
     }
 }

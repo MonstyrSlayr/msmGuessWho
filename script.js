@@ -231,6 +231,7 @@ let isFirstGuess = true;
 const pointsSpan = document.getElementById("pointsSpan");
 const timerSpan = document.getElementById("timer");
 const cluesDiv = document.getElementById("clues");
+const cluesHeader = document.getElementById("cluesHeader");
 const cluesBoxDiv = document.getElementById("cluesBox");
 const cluesFooter = document.getElementById("cluesFooter");
 const clueRarity = document.getElementById("clueRarity");
@@ -331,6 +332,7 @@ function setClueRarity(daRarity)
 
 function newGuess()
 {
+    cluesHeader.innerHTML = "";
     cluesBoxDiv.innerHTML = "";
     cluesFooter.innerHTML = "";
     revealDiv.innerHTML = "";
@@ -348,7 +350,7 @@ function newGuess()
 
         if (soCheckbox.checked)
         {
-            if (soMode == "memory" && !isFirstGuess)
+            if (soMode == "memory" && isFirstGuess)
             {
                 availableModes.push("memory");
             }
@@ -377,7 +379,7 @@ function newGuess()
             clueImg.alt = "Silhouette";
             cluesBoxDiv.appendChild(clueImg);
 
-            cluesFooter.textContent = "";
+            cluesFooter.textContent = "Monster Silhouette";
 
             break;
         
@@ -459,7 +461,7 @@ function newGuess()
 
             const imgAndNameDiv = document.createElement("div");
             imgAndNameDiv.classList.add("imgAndName");
-            cluesBoxDiv.appendChild(imgAndNameDiv);
+            cluesHeader.appendChild(imgAndNameDiv);
 
                 const islandImg = document.createElement("img");
                 islandImg.src = daIsland.symbol;
@@ -507,6 +509,7 @@ function newGuess()
     }
 
     guessInput.disabled = false;
+    guessInput.focus();
     forfeitButton.disabled = false;
     guessStartTime = new Date();
 
