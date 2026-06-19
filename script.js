@@ -384,10 +384,18 @@ function newGuess()
         case "islands":
             for (const island of curMonster.islands)
             {
-                const clueImg = document.createElement("img");
-                clueImg.src = island.symbol;
-                clueImg.alt = island.name;
-                cluesBoxDiv.appendChild(clueImg);
+                const imgAndNameDiv = document.createElement("div");
+                imgAndNameDiv.classList.add("imgAndName");
+                cluesBoxDiv.appendChild(imgAndNameDiv);
+
+                    const clueImg = document.createElement("img");
+                    clueImg.src = island.symbol;
+                    clueImg.alt = island.name + " symbol";
+                    imgAndNameDiv.appendChild(clueImg);
+
+                    const clueName = document.createElement("label");
+                    clueName.textContent = island.name;
+                    imgAndNameDiv.appendChild(clueName);
             }
 
             if (curMonster.islands.size == 1)
@@ -406,10 +414,18 @@ function newGuess()
         case "elements":
             for (const elementSigil of curMonster.elements)
             {
-                const clueImg = document.createElement("img");
-                clueImg.src = elementSigil.sigil;
-                clueImg.alt = elementSigil.name;
-                cluesBoxDiv.appendChild(clueImg);
+                const imgAndNameDiv = document.createElement("div");
+                imgAndNameDiv.classList.add("imgAndName");
+                cluesBoxDiv.appendChild(imgAndNameDiv);
+
+                    const clueImg = document.createElement("img");
+                    clueImg.src = elementSigil.sigil;
+                    clueImg.alt = elementSigil.name + " sigil";
+                    imgAndNameDiv.appendChild(clueImg);
+
+                    const clueName = document.createElement("label");
+                    clueName.textContent = elementSigil.name;
+                    imgAndNameDiv.appendChild(clueName);
             }
 
             cluesFooter.textContent = `Only one ${curMonster.rarity} monster has this unique element combination!`;
@@ -440,18 +456,46 @@ function newGuess()
             const randLike = [...curMonster.likes].filter(like => !like.island.unreleased)[Math.floor([...curMonster.likes].filter(like => !like.island.unreleased).length * Math.random())];
 
             const daIsland = randLike.island;
-            const clueIsland = document.createElement("img");
-            clueIsland.src = daIsland.symbol;
-            clueIsland.alt = daIsland.name;
-            cluesBoxDiv.appendChild(clueIsland);
 
-            cluesFooter.innerHTML = `Likes:<br>`;
+            const imgAndNameDiv = document.createElement("div");
+            imgAndNameDiv.classList.add("imgAndName");
+            cluesBoxDiv.appendChild(imgAndNameDiv);
+
+                const islandImg = document.createElement("img");
+                islandImg.src = daIsland.symbol;
+                islandImg.alt = daIsland.name + " symbol";
+                imgAndNameDiv.appendChild(islandImg);
+
+                const islandName = document.createElement("label");
+                islandName.textContent = daIsland.name + " Likes";
+                imgAndNameDiv.appendChild(islandName);
 
             const daLikes = [...curMonster.likes].filter(like => like.island == daIsland);
 
+            cluesFooter.innerHTML = `Likes on ` + daIsland.name;
+
             for (const like of daLikes)
             {
-                cluesFooter.innerHTML += like.name + "<br>";
+                const likeImgAndNameDiv = document.createElement("div");
+                likeImgAndNameDiv.classList.add("imgAndName");
+                cluesBoxDiv.appendChild(likeImgAndNameDiv);
+                
+                    const likeImg = document.createElement("img");
+                    if (like.isDecoration)
+                    {
+                        likeImg.src = like.obj.image;
+                        likeImg.alt = like.name + " image";
+                    }
+                    else
+                    {
+                        likeImg.src = like.obj.portrait;
+                        likeImg.alt = like.name + " image";
+                    }
+                    likeImgAndNameDiv.appendChild(likeImg);
+
+                    const likeName = document.createElement("label");
+                    likeName.textContent = like.name;
+                    likeImgAndNameDiv.appendChild(likeName);
             }
 
             break;
