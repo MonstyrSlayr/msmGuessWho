@@ -1,4 +1,4 @@
-import { getMonsters, getRarities } from "https://monstyrslayr.github.io/msmTools/monsters.js";
+import { getMonsters, getRarities, getClasses } from "https://monstyrslayr.github.io/msmTools/monsters.js";
 import { getCookie, setCookie } from "./cookies.js";
 
 const NEXT_MONSTER_TIMER = 5000;
@@ -42,6 +42,7 @@ let points = 0;
 let guessStartTime = null;
 
 const RARITY = getRarities();
+const MCLASS = getClasses();
 
 function getMonstersWithUniqueIslands(monsters)
 {
@@ -104,7 +105,7 @@ function normalizeBio(bio)
         .toLowerCase();       // make comparison case-insensitive
 }
 
-// const monsters = (await getMonsters()).filter((monster) => monster.name == "Quibble");
+// const monsters = (await getMonsters()).filter((monster) => monster.class == MCLASS.DIPSTER);
 const monsters = await getMonsters();
 const commonMonsters = monsters.filter(monster => monster.rarity == RARITY.COMMON);
 const rareMonsters = monsters.filter(monster => monster.rarity == RARITY.RARE);
